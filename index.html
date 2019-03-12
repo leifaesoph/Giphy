@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Giphy Hero</title>
+    <link rel="stylesheet" type="text/css" href="/Users/leifaesoph/Desktop/Giphy/Untitled-2.css">
+</head>
+
+<body>
+
+    <h1>Dope Super Heros</h1>
+
+    <div id="buttons"></div>
+
+    <div class="form-group">
+        <label for="search">Add a Hero</label>
+        <input type="text" class="form-control" id="search-term">
+        <button id="addButton" class="heros"> Add! </button>
+    </div>
+
+    <br>
+
+    <div>
+        <div class="gif" id="images" data-state="still"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        var topics = ["Goku", "Wolverine", "Captain Marvel", "Gambit", "Hulk", "Deadpool", "Jean Grey"];
+        for (var i = 0; i < topics.length; i++) {
+            var herosList = $("<button>");
+            herosList.addClass("heros");
+            herosList.attr("id", "firstNine");
+            herosList.attr("data-nine", topics[i]);
+            herosList.text(topics[i]);
+            $("#buttons").append(herosList);
+        }
+        $("#addButton").on("click", function () {
+            event.preventDefault();
+            var newButton = $("<button>");
+            var userInput = $("#search-term").val().trim()
+            topics.push(userInput);
+            newButton.addClass("heros");
+            newButton.attr("id", "moreButtons");
+            newButton.attr("data-new", userInput);
+            newButton.text(userInput);
+            $("#buttons").append(newButton);
+        });
+        $(document).on("click", "#moreButtons", function () {
+            var heroNew = $(this).attr("data-new");
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+                heroNew + "&api_key=dc6zaTOxFJmzC&limit=10";
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+                .done(function (response) {
+                    $("#images").empty();
+                    var results = response.data;
+                    for (var i = 0; i < results.length; i++) {
+                        var gifImages = $("<div>");
+                        var rating = results[i].rating;
+                        var p = $("<p>").text("Rating: " + rating);
+                        var heroImgage
+                            = $("<img>");
+                        heroImgage.attr("data-state", "still")
+                        heroImgage.attr("src", results[i].images.fixed_height_small_still.url);
+                        heroImgage.attr("data-still", results[i].images.fixed_height_small_still.url)
+                        heroImgage.attr("data-animate", results[i].images.fixed_height_small.url)
+                        heroImgage.attr("class", "gif")
+                        gifImages.prepend(heroImgage);
+                        gifImages.prepend(p);
+                        $("#images").prepend(gifImages);
+                    };
+                });
+        });
+
+        $(document).on("click", "#firstNine", function () {
+            var hero = $(this).attr("data-nine");
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+                hero + "&api_key=dc6zaTOxFJmzC&limit=10";
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+                .done(function (response) {
+                    $("#images").empty();
+                    var results = response.data;
+                    for (var i = 0; i < results.length; i++) {
+                        var gifImages2 = $("<div>");
+                        var rating2 = results[i].rating;
+                        var p = $("<p>").text("Rating: " + rating2);
+                        var heroImage2 = $("<img>");
+                        heroImage2.attr("data-state", "still")
+                        heroImage2.attr("src", results[i].images.fixed_height_small_still.url);
+                        heroImage2.attr("data-still", results[i].images.fixed_height_small_still.url)
+                        heroImage2.attr("data-animate", results[i].images.fixed_height_small.url)
+                        heroImage2.attr("class", "gif")
+                        gifImages2.prepend(heroImage2);
+                        gifImages2.prepend(p);
+                        $("#images").prepend(gifImages2);
+                    };
+                });
+        });
+        $(document).on("click", ".gif", function () {
+            var state = $(this).attr("data-state");
+            if (state === "still") {
+                $(this).attr("src", $(this).data("animate"));
+                $(this).attr("data-state", "animate");
+            } else {
+                $(this).attr("src", $(this).data("still"));
+                $(this).attr("data-state", "still");
+            }
+        });
+    </script>
+
+</body>
+
+</html>
